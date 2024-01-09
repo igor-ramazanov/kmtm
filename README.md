@@ -4,7 +4,8 @@ A simple file manager intended to be used in combination with TUI editors like N
 ![Screenshot](./screenshot.png)
 
 ## Motivation
-Existing solutions are too powerful and too configurable.
+Existing solutions like [`broot`](https://github.com/Canop/broot), [`yazi`](https://github.com/sxyazi/yazi) or [`nnn`](https://github.com/jarun/nnn) are too advanced, complex and powerful. \
+The [`kakoune-filetree`](https://github.com/occivink/kakoune-filetree) and [`kaktree`](https://github.com/andreyorst/kaktree) are good projects, but Kakoune specific.
 
 ## Usage
 ```
