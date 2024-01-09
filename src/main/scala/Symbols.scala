@@ -1,44 +1,36 @@
-class Symbols():
-  val file = ""
-  val closedDir = ""
-  val openedDir = ""
+import io.circe.Codec
 
-  // To draw trees
-  val child = "├"
-  val lastChild = "└"
-  val pipe = "│"
-  val empty = " "
+final case class Symbols(
+    dirClosed: String,
+    dirOpened: String,
+    extensions: Map[String, String],
+    file: String,
+    treeChild: String,
+    treeEmpty: String,
+    treeLastChild: String,
+    treePipe: String,
+)
 
-  val extensions = Map(
-    "bash" -> "",
-    "clj" -> "",
-    "cljc" -> "",
-    "cljr" -> "",
-    "cljs" -> "",
-    "cql" -> "",
-    "edn" -> "",
-    "go" -> "",
-    "hs" -> "",
-    "html" -> "",
-    "jar" -> "",
-    "java" -> "",
-    "jpeg" -> "",
-    "jpg" -> "",
-    "js" -> "",
-    "json" -> "",
-    "md" -> "",
-    "nix" -> "",
-    "nu" -> "",
-    "php" -> "",
-    "png" -> "",
-    "py" -> ":",
-    "rb" -> "",
-    "rs" -> "",
-    "sbt" -> "",
-    "sc" -> "",
-    "scala" -> "",
-    "sh" -> "",
-    "sql" -> "",
-    "ts" -> "",
-    "zsh" -> "",
+object Symbols:
+
+  given Codec[Symbols] = Codec.forProduct8(
+    "dir-closed",
+    "dir-opened",
+    "extensions",
+    "file",
+    "tree-child",
+    "tree-empty",
+    "tree-last-child",
+    "tree-pipe",
+  )(apply)(symbols =>
+    (
+      symbols.dirClosed,
+      symbols.dirOpened,
+      symbols.extensions,
+      symbols.file,
+      symbols.treeChild,
+      symbols.treeEmpty,
+      symbols.treeLastChild,
+      symbols.treePipe,
+    )
   )

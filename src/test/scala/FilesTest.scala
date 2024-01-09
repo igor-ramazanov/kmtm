@@ -3,7 +3,7 @@ import java.nio.file.Paths
 import munit.FunSuite
 
 class FilesTest extends FunSuite:
-  val files = Files(Symbols())
+  val files = Files(Config.default.symbols)
 
   test("delete + hierarchy down"):
       val root = Paths.get("./foo")
@@ -68,10 +68,10 @@ class FilesTest extends FunSuite:
       assertEquals(
         result,
         """|A
-           |├B
-           |│├C
-           |│└D
-           |└E""".stripMargin,
+           |├─ B
+           |│  ├─ C
+           |│  ╰─ D
+           |╰─ E""".stripMargin,
       )
 
       files.deleteRecursively(A.toFile())
@@ -97,8 +97,3 @@ class FilesTest extends FunSuite:
       assertEquals(result, Set(A, B, C).map(path => path.toFile()))
 
       files.deleteRecursively(A.toFile())
-
-  test("git"):
-      val root = Paths.get(".").toFile()
-      val git = Git(root, files)
-      println(git.ignored(Paths.get("target").toFile()))

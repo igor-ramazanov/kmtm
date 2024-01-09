@@ -105,8 +105,10 @@ class Files(symbols: Symbols):
   ): String =
     if isRoot then ""
     else
-      prefixes.map(b => if b then symbols.empty else symbols.pipe).mkString +
-        (if isLast then symbols.lastChild else symbols.child)
+      prefixes
+        .map(b => if b then symbols.treeEmpty else symbols.treePipe)
+        .mkString +
+        (if isLast then symbols.treeLastChild else symbols.treeChild)
 
   private def children(parent: File) = JFiles
     .list(parent.toPath)

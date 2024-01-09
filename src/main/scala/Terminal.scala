@@ -41,7 +41,7 @@ object Terminal:
       onFocusChange: String,
       onEnter: String,
   ): AppState =
-    val symbols = Symbols()
+    val symbols = Config.unsafeLoad().symbols
     val files = Files(symbols)
     val git = Git(root, files)
     val state = AppState(root, files, git, symbols, onFocusChange, onEnter)

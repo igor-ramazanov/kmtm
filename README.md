@@ -31,6 +31,10 @@ Options and flags:
 * Create, rename and delete files.
 * Show/hide Git ignored file.
 
+## Configuration
+Located at `${XDG_CONFIG_HOME}/kmtm/config.json`, fallsback to `${HOME}/.config/kmtm/config.json`. \
+If no configuration found then generates the default configuration.
+
 ## Building
 
 ### Nix
@@ -46,7 +50,6 @@ The binary will be in the `/target/graalvm-native-image/kmtm`.
 
 
 ## TODOs
-* External configuration for UI customization: symbols, tree rendering.
 * Help page within the app.
 * Build instructions.
 * Build as a static binary.
@@ -76,3 +79,4 @@ map global user t ":toggle-file-tree<ret>" -docstring "Open project view"
 
 On pressing `t` Kakoune will spin up a left tmux pane in the same working directory and opening the `kmtm` files manager. \
 The `kmtm` will be asked to send the `evaluate-commands edit {}` back the Kakoune on each file focus change, and moving the tmux focus back to the editor as an opening action on files.
+

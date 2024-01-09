@@ -184,7 +184,7 @@ final case class AppState private (
       val (file, prefix) = items(i)
       val (name, symbol) = getNameAndSymbol(file)
       val text = Text.from(
-        Span(s"$prefix$symbol ", Style.DEFAULT),
+        Span(s"$prefix$symbol", Style.DEFAULT),
         Span(name, getStyle(file, modified, untracked)),
       )
 
@@ -199,8 +199,8 @@ final case class AppState private (
             case Some(extSymbol) => name -> extSymbol
             case None => fullname -> symbols.file
         case _ => fullname -> symbols.file
-    else if openedDirs(file) then fullname -> symbols.openedDir
-    else fullname -> symbols.closedDir
+    else if openedDirs(file) then fullname -> symbols.dirOpened
+    else fullname -> symbols.dirClosed
 
   private def getStyle(
       file: File,

@@ -20,9 +20,9 @@
         pname = "kmtm";
         version = "1.0.0";
         src = ./.;
-        depsSha256 = "sha256-wNkZzyIlnBVPJ+JbTe1ASQ/ZOZnOVO+NHNt6IDNPD+k=";
+        depsSha256 = "sha256-NnB2s96DmM4/rOo1aazQMzGMbNP9xmfj0LYByG23oaw=";
         nativeBuildInputs = [pkgs.graalvm-ce];
-        buildPhase = "sbt 'GraalVMNativeImage/packageBin'";
+        buildPhase = "sbt 'test; GraalVMNativeImage/packageBin'";
         installPhase = ''
           mkdir -p $out/bin
           mv target/graalvm-native-image/kmtm $out/bin/
