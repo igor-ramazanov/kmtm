@@ -54,7 +54,7 @@ The binary will be in the `/target/graalvm-native-image/kmtm`.
 With `tmux` + `kakoune`:
 
 `~/.config/kak/kakrc`:
-```kakoune
+```KakouneScript
 # File tree view
 define-command toggle-file-tree %{nop %sh{
   CURRENT_WORKING_PATH="$(tmux display -pF '#{pane_current_path}')"
