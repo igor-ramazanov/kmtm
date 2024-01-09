@@ -1,5 +1,5 @@
 {
-  description = "A simple file manager to be used with TUI editors like vim/kakoune/helix";
+  description = "A simple file manager intended to be used in combination with TUI editors like Neovim, Helix, Kakoune.";
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
