@@ -1,6 +1,8 @@
 # KMTM
 A simple file manager intended to be used in combination with TUI editors like Neovim, Helix, Kakoune.
 
+![Screenshot](./screenshot.png)
+
 ## Motivation
 Existing solutions are too powerful and too configurable.
 
