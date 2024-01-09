@@ -15,7 +15,7 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {inherit system;};
-      package = sbt.lib.mkSbtDerivation {
+      kmtm = sbt.lib.mkSbtDerivation {
         inherit pkgs;
         pname = "kmtm";
         version = "1.0.0";
@@ -30,10 +30,10 @@
       };
     in {
       formatter = pkgs.alejandra;
-      package.default = package;
+      packages.default = kmtm;
       apps.default = {
         type = "app";
-        program = "${package}/bin/kmtm";
+        program = "${kmtm}/bin/kmtm";
       };
     });
 }
