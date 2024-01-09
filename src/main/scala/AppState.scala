@@ -13,7 +13,7 @@ import tui.Text
 object AppState:
 
   enum Mode:
-    case Tree, CreateFile, CreateDir, Rename
+    case Tree, CreateFile, CreateDir, Rename, Help
 
   def apply(
       root: File,
@@ -61,6 +61,10 @@ final case class AppState private (
     mode = AppState.Mode.Tree
     userInput = ""
 
+  def showHelp(): Unit = mode = AppState.Mode.Help
+
+  def hideHelp(): Unit = mode = AppState.Mode.Tree
+
   def createFile(): Unit =
     import AppState.Mode.*
     mode match
@@ -72,7 +76,7 @@ final case class AppState private (
         mode = Tree
         userInput = ""
         onFocus()
-      case Tree | CreateDir | Rename => mode = CreateFile
+      case Tree | CreateDir | Rename | Help => mode = CreateFile
 
   def createDir(): Unit =
     import AppState.Mode.*
@@ -85,7 +89,7 @@ final case class AppState private (
         mode = Tree
         userInput = ""
         onFocus()
-      case Tree | CreateFile | Rename => mode = CreateDir
+      case Tree | CreateFile | Rename | Help => mode = CreateDir
 
   def rename(): Unit =
     val isCharValid = (char: Char) =>
@@ -104,7 +108,7 @@ final case class AppState private (
         mode = Tree
         focus(newFile)
         onFocus()
-      case Tree | CreateFile | CreateDir =>
+      case Tree | CreateFile | CreateDir | Help =>
         userInput = focused.getName()
         mode = Rename
 
@@ -134,7 +138,9 @@ final case class AppState private (
     refresh()
 
   def openFile(): Unit =
-    val _ = onEnter.!(ProcessLogger(_ => ()))
+    val cmd = onEnter.replace("{}", focused.getAbsolutePath())
+    val wrapped = Process(command = "sh", arguments = List("-c", cmd))
+    val _ = wrapped.!!(ProcessLogger(_ => ()))
 
   def toggleFocusedOrOpen(): Unit =
     if focused.isFile then openFile()
@@ -170,7 +176,7 @@ final case class AppState private (
 
   private def onFocus(): Unit = if focused.isFile then
     val cmd = onFocusChange.replace("{}", focused.getAbsolutePath())
-    val wrapped = Process(command = "zsh", arguments = List("-c", cmd))
+    val wrapped = Process(command = "sh", arguments = List("-c", cmd))
     val _ = wrapped.!!(ProcessLogger(_ => ()))
 
   private def updateListWidgetItems(): Unit =

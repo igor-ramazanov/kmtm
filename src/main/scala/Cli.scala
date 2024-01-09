@@ -28,12 +28,12 @@ object Cli:
 
   private val onFocusChangeOpt = Opts.option[String](
     long = "on-focus-change",
-    help = "A command to run when the focus is moved to another file, '{}' is a placeholder for the absolute file path.",
+    help = "A command to run whenever focus moving to another file, '{}' is an absolute path placeholder.",
   )
 
   private val onEnterOpt = Opts.option[String](
     long = "on-enter",
-    help = "A command to run when the file is opened.",
+    help = "A command to run whenever file is opened, '{}' is an absolute path placeholder.",
   )
 
   val name = "kmtm"

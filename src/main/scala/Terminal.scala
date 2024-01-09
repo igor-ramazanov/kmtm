@@ -14,6 +14,7 @@ import tui.Grapheme
 import tui.Layout
 import tui.Margin
 import tui.Modifier
+import tui.Rect
 import tui.Span
 import tui.Spans
 import tui.Style
@@ -56,8 +57,36 @@ object Terminal:
     import AppState.Mode
     state.mode match
       case Mode.Tree => renderList(frame, state)
+      case Mode.Help => renderHelp(frame)
       case Mode.CreateFile | Mode.CreateDir | Mode.Rename =>
         renderInput(frame, state)
+
+  private def renderHelp(frame: Frame): Unit =
+    val n = (s: String) => Span.nostyle(s)
+    val b =
+      (s: String) => Span.styled(s, Style.DEFAULT.addModifier(Modifier.BOLD))
+    val help = ParagraphWidget(
+      block = Some(BlockWidget(
+        borders = Borders.ALL,
+        title =
+          Some(Spans.styled("Shortcuts", Style.DEFAULT.addModifier(Modifier.BOLD))),
+        borderType = BlockWidget.BorderType.Rounded,
+      )),
+      text = Text.fromSpans(
+        Spans.from(b("q"), n(": "), b("q"), n("uit\n")),
+        Spans.from(b("r"), n(": "), b("r"), n("ename\n")),
+        Spans.from(b("t"), n(": "), b("t"), n("ouch file\n")),
+        Spans.from(b("m"), n(": "), b("m"), n("kdir\n")),
+        Spans.from(b("i"), n(": "), n("show/hide "), b("i"), n("gnored\n")),
+        Spans.from(b("d"), n(": "), b("d"), n("elete\n")),
+        Spans.from(b("j, <Down>"), n(": "), n("focus next\n")),
+        Spans.from(b("k, <Up>"), n(": "), n("focus prev\n")),
+        Spans
+          .from(b("<Return>, <Space>"), n(": "), n("toggle dir or open file\n")),
+        Spans.from(b("<Esc>"), n(": "), n("run 'on-enter' callback\n")),
+      ),
+    )
+    frame.renderWidget(help, frame.size)
 
   private def renderInput(frame: Frame, state: AppState): Unit =
     val chunks = Layout(
@@ -65,11 +94,12 @@ object Terminal:
       margin = Margin(2),
       constraints = Array(Constraint.Length(1), Constraint.Length(1)),
     ).split(frame.size)
+
     val help = ParagraphWidget(
       text = Text.from(
-        Span("ESC", Style.DEFAULT.addModifier(Modifier.BOLD)),
-        Span.nostyle(" to stop, "),
-        Span("Enter", Style.DEFAULT.addModifier(Modifier.BOLD)),
+        Span("<Esc>", Style.DEFAULT.addModifier(Modifier.BOLD)),
+        Span.nostyle(" to cancel, "),
+        Span("<Return>", Style.DEFAULT.addModifier(Modifier.BOLD)),
         Span.nostyle(" to finish"),
       ),
       alignment = Alignment.Center,
@@ -79,7 +109,10 @@ object Terminal:
       text = Text.nostyle(state.userInput),
       block = Some(BlockWidget(
         borders = Borders.ALL,
-        title = Some(Spans.nostyle("Input")),
+        title = Some(Spans.styled(
+          state.mode.toString(),
+          Style.DEFAULT.addModifier(Modifier.BOLD),
+        )),
         borderType = BlockWidget.BorderType.Rounded,
       )),
     )
@@ -90,6 +123,10 @@ object Terminal:
     )
 
   private def renderList(frame: Frame, state: AppState): Unit =
+    val rect = frame.size
+    val top = Rect(x = 0, y = 0, width = rect.width, height = rect.height - 1)
+    val bottom = Rect(x = 0, y = rect.bottom - 1, width = rect.width, height = 1)
+
     val items = state.listWidgets
     val list = ListWidget(
       items = items,
@@ -97,7 +134,13 @@ object Terminal:
       highlightStyle = Style.DEFAULT.addModifier(Modifier.BOLD),
     )
     val selected = state.listWidgetState
-    frame.renderStatefulWidget(list, frame.size)(selected)
+
+    frame.renderStatefulWidget(list, top)(selected)
+
+    val help = ParagraphWidget(
+      Text.from(Span("'?' for help", Style.DEFAULT.addModifier(Modifier.ITALIC)))
+    )
+    frame.renderWidget(help, bottom)
 
   private def handleEvent(jni: CrosstermJni, state: AppState) =
     import tui.crossterm.Event
@@ -107,14 +150,19 @@ object Terminal:
     jni.read() match
       case key: Event.Key => state.mode match
 
+          case Mode.Help => key.keyEvent().code match
+              case q: KeyCode.Char if q.c() == 'q' => state.hideHelp()
+              case _: KeyCode.Esc => state.hideHelp()
+              case _ => ()
+
           case Mode.Tree => key.keyEvent().code match
               case q: KeyCode.Char if q.c() == 'q' => running = false
 
               case _: KeyCode.Esc => state.openFile()
 
               case r: KeyCode.Char if r.c() == 'r' => state.rename()
-              case f: KeyCode.Char if f.c() == 'f' => state.createFile()
-              case g: KeyCode.Char if g.c() == 'g' => state.createDir()
+              case t: KeyCode.Char if t.c() == 't' => state.createFile()
+              case m: KeyCode.Char if m.c() == 'm' => state.createDir()
 
               case i: KeyCode.Char if i.c() == 'i' => state.toggleIgnored()
 
@@ -129,6 +177,9 @@ object Terminal:
 
               case spc: KeyCode.Char if spc.c() == ' ' =>
                 state.toggleFocusedOrOpen()
+
+              case question: KeyCode.Char if question.c() == '?' =>
+                state.showHelp()
               case _ => ()
 
           case Mode.CreateDir | Mode.CreateFile | Mode.Rename =>
@@ -139,7 +190,7 @@ object Terminal:
                   case Mode.CreateDir => state.createDir()
                   case Mode.CreateFile => state.createFile()
                   case Mode.Rename => state.rename()
-                  case Mode.Tree => sys.error("Unreachable")
+                  case Mode.Help | Mode.Tree => sys.error("Unreachable")
 
               case _: KeyCode.Backspace =>
                 state.userInput = state.userInput.init
