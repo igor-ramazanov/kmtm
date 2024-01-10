@@ -50,9 +50,9 @@ The binary will be in the `/target/graalvm-native-image/kmtm`.
 
 
 ## TODOs
-* Help page within the app.
-* Build instructions.
+* Build and publish binaries using Github Actions.
 * Build as a static binary.
+    - Explore integration with Cosmopolitan.
 
 ## Example usage
 With `tmux` + `kakoune`:
