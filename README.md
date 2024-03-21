@@ -1,4 +1,7 @@
 # KMTM
+
+*NOTE*: The project is archived, because I've invested the time in learning `yazì` and found it way more convenient and superior to `kmtm`.
+
 A simple file manager intended to be used in combination with TUI editors like Neovim, Helix, Kakoune.
 
 ![Screenshot](./screenshot.png)
